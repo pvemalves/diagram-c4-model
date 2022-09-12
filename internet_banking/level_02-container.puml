@@ -1,0 +1,31 @@
+@startuml Container Diagram for Internet Banking System
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+SHOW_PERSON_OUTLINE()
+
+Person(pbc, "Personal Banking Customer", "A customer of the bank, with personal bank accounts.")
+System_Ext(es, "E-mail system", "The internal Microsoft Exchange e-mail system.")
+System_Ext(mbs, "Mainframe Banking System", "Stores all of the core banking information about customers, accounts, transactions, etc.")
+
+System_Boundary(ibs, "Internet Banking System") {
+    Container(wa, "Web Application", "Java and Spring MVC", "Delivers the static content and the internet banking single page application.")
+    Container(spa, "Single Page Application", "Javascript and Angular", "Provides all the internet banking functionality to customers via their web browser.")
+    Container(ma, "Mobile App", "Xamarin", "Provides a limited subset ot the internet banking functionality to customers via their mobile mobile device.")
+    ContainerDb(db, "Database", "Oracle Database Schema", "Stores user registration information, hashed authentication credentials, access logs, etc.")
+    Container(api, "API Application", "Java and String MVC", "Provides internet banking functionality via a JSON/HTTP API.")
+
+    Rel_R(api, es, "Sends e-mail using", "SMTP")
+    Rel(api, mbs, "Makes API calls to", "XML/HTTPS")
+    Rel_L(api, db, "Reads from and writes to", "JDBC")
+    Rel_R(wa, spa, "Delivers to the customer's web browser")
+    Rel(spa, api, "Makes API calls to", "JSON/HTTPS")
+    Rel(ma, api, "Makes API calls to", "JSON/HTTPS")
+}
+
+Rel(pbc, wa, "Visits bigbank.com/ibsusing", "HTTPS")
+Rel(pbc, spa, "Views account balances, and makes payments using")
+Rel(pbc, ma, "Views account balances, and makes payments using")
+Rel_L(es, pbc, "Sends e-mails to")
+
+SHOW_LEGEND(false)
+@enduml

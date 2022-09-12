@@ -1,0 +1,36 @@
+@startuml Component diagram for Internet Banking System - API Application
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container(spa, "Single Page Application", "Javascript and Angular", "Provides all the internet banking functionality to customers via their web browser.")
+Container(ma, "Mobile App", "Xamarin", "Provides a limited subset ot the internet banking functionality to customers via their mobile device.")
+ContainerDb(db, "Database", "Relational Database Schema", "Stores user registration information, hashed authentication credentials, access logs, etc.")
+System_Ext(mbs, "Mainframe Banking System", "Stores all of the core banking information about customers, accounts, transactions, etc.")
+System_Ext(es, "E-mail System", "The internal Microsoft Exchange e-mail system.")
+
+Container_Boundary(api, "API Application") {
+    Component(sign, "Sign In Controller", "Spring MVC Rest Controller", "Allows users to sign in to the internet banking system")
+    Component(resetpass, "Reset Password Controller", "Spring MVC Rest Controller", "Allows users to reset their passwords with a single use URL")
+    Component(accounts, "Accounts Summary Controller", "Spring MVC Rest Controller", "Provides customers with a summory of their bank accounts")
+    Component(security, "Security Component", "Spring Bean", "Provides functionality related to singing in, changing passwords, etc.")
+    Component(email, "E-mail Component", "Spring Bean", "Sends e-mails to users.")
+    Component(mbsfacade, "Mainframe Banking System Facade", "Spring Bean", "A facade onto the mainframe banking system.")
+
+    Rel(sign, security, "Uses")
+    Rel(resetpass, email, "Uses")
+    Rel(resetpass, security, "Uses")
+    Rel(accounts, mbsfacade, "Uses")
+    Rel(security, db, "Reads from and writes to", "JDBC")
+    Rel(email, es, "Sends e-mail using")
+    Rel(mbsfacade, mbs, "Uses", "XML/HTTPS")
+}
+
+Rel(spa, sign, "Makes API calls to", "JSON/HTTPS")
+Rel(spa, accounts, "Makes API calls to", "JSON/HTTPS")
+Rel(spa, resetpass, "Makes API calls to", "JSON/HTTPS")
+
+Rel(ma, sign, "Makes API calls to", "JSON/HTTPS")
+Rel(ma, accounts, "Makes API calls to", "JSON/HTTPS")
+Rel(ma, resetpass, "Makes API calls to", "JSON/HTTPS")
+
+SHOW_LEGEND(false)
+@enduml

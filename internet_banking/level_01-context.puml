@@ -1,0 +1,23 @@
+@startuml Context Diagram for Internet Banking System
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+/' LAYOUT_TOP_DOWN() Not needed because this is the default '/
+/'LAYOUT_LEFT_RIGHT() or  LAYOUT_LANDSCAPE()'/
+
+SHOW_PERSON_OUTLINE()
+/'LAYOUT_AS_SKETCH()'/
+
+Person(pbc, "Personal Banking Customer", "A customer of the bank, with personal bank accounts.")
+Enterprise_Boundary(enterprise, "Big Bank plc") {
+    System(ibs, "Internet Banking System", "Allows customers to view information about their bank accounts, and make payments.")
+    System_Ext(es, "E-mail system", "The internal Microsoft Exchange e-mail system.")
+    System_Ext(mbs, "Mainframe Banking System", "Stores all of the core banking information about customers, accounts, transactions, etc.")
+}
+
+Rel_D(pbc, ibs, "Views account balances, ans makes payments using")
+Rel_U(es, pbc, "Sends e-mails to")
+Rel_R(ibs, es, "Sends e-mail using", "SMTP")
+Rel_D(ibs, mbs, "Gets account information from, and makes payments using")
+
+SHOW_LEGEND(false)
+@enduml
